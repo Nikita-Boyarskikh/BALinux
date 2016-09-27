@@ -1,1 +1,1 @@
-# Linux-administrarion-homeworks
+# Здесь хранятся мои домашние задания по курсу Администрирование Linux
