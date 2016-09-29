@@ -1,0 +1,9 @@
+  ...  ...............................................................................
+  818  cd ~
+  819  mkdir n.boyarskikh
+  820  cd n.boyarskikh/
+  821  ps ax>ps.out
+  822  free>mem.out
+  823  df -h>disk.out
+  824  mkdir -p 'Dir1/Dir3' 'Dir1/Dir4' 'Dir1/Dir5' 'Dir2/Dir6' 'Dir2/Dir7' 'Dir2/Dir8'
+  825  history>history.out
