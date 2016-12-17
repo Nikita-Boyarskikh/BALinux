@@ -14,5 +14,5 @@ rm /etc/apache2/sites-available/sysinfo.conf /etc/apache2/sites-enabled/sysinfo.
 rm -rf /var/www/cgi-bin
 
 # Удаляем apache2 и nginx
-apt-get -y purge apache2 nginx
+apt-get -y purge apache2 nginx sysstat
 apt -y autoremove
