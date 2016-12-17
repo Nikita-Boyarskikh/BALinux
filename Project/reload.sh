@@ -5,7 +5,7 @@ service nginx stop
 service apache2 stop
 
 # Копируем конфиги для apache и включаем их в его include
-rm /etc/apache2/ports.conf /etc/apache2/apache2.conf
+rm /etc/apache2/apache2.conf
 cp apache/apache2.conf /etc/apache2/apache2.conf
 cp apache/sysinfo.conf /etc/apache2/sites-available/sysinfo.conf
 
@@ -13,11 +13,8 @@ cp apache/sysinfo.conf /etc/apache2/sites-available/sysinfo.conf
 cp nginx/BALinux.conf /etc/nginx/sites-available/BALinux.conf
 
 # Копируем исполняемые файлы
-cp -R cgi-bin /var/www/
-chown www-data:www-data /var
-chmod 770 /var
-chown www-data:www-data -R /var/www
-chmod 770 -R /var/www
+cp -R sysinfo /var/www/
+chmod 775 -R /var/www/sysinfo
 
 # Запускаем apache и nginx
 service nginx start

@@ -1,0 +1,4 @@
+SHELL=/bin/bash
+MAILTO=N02@yandex.ru
+count=10
+* * * * * for((i=0;i<$count;i++));do tcpdump -G 6 -W 1 -w /tmp/tcpdump/file$i -Z root; tcpdump -ne -r /tmp/tcpdump/file$i> /tmp/tcpdump/file$i.dump; done

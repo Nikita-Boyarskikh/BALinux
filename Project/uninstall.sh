@@ -11,8 +11,13 @@ rm /etc/nginx/sites-available/BALinux.conf /etc/nginx/sites-enabled/BALinux.conf
 rm /etc/apache2/sites-available/sysinfo.conf /etc/apache2/sites-enabled/sysinfo.conf
 
 # Удаляем исполняемые файлы
-rm -rf /var/www/cgi-bin
+rm -rf /var/www/sysinfo
+
+# Удаляем cron-задачи
+crontab -r
+rm -rf /tmp/tcpdump
 
 # Удаляем apache2 и nginx
 apt-get -y purge apache2 nginx sysstat
 apt -y autoremove
+apt-get -y clean
