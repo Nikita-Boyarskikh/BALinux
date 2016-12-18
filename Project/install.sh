@@ -21,8 +21,9 @@ cp -R sysinfo /var/www/sysinfo/
 chmod 775 -R /var/www/sysinfo
 
 # Создаём cron-задачи
-mkdir /tmp/tcpdump
-chmod 777 /tmp/tcpdump
+mkdir /tmp/sysinfo
+mkdir /tmp/sysinfo/tcpdump
+chmod 777 -R /tmp/sysinfo
 crontab cron
 
 # Запускаем apache и nginx

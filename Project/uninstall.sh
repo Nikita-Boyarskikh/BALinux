@@ -15,7 +15,7 @@ rm -rf /var/www/sysinfo
 
 # Удаляем cron-задачи
 crontab -r
-rm -rf /tmp/tcpdump
+rm -rf /tmp/sysinfo
 
 # Удаляем apache2 и nginx
 apt-get -y purge apache2 nginx sysstat
