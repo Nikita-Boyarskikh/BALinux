@@ -28,6 +28,7 @@ mkdir /tmp/sysinfo
 mkdir /tmp/sysinfo/tcpdump
 mkdir /tmp/sysinfo/iostat
 mkdir /tmp/sysinfo/procfs
+mkdir /tmp/sysinfo/net
 mkdir /tmp/sysinfo/netstat
 mkdir /tmp/sysinfo/mpstat
 mkdir /tmp/sysinfo/df

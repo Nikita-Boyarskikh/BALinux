@@ -1,0 +1,2 @@
+$((60/$1)) -W 1 -w /tmp/sysinfo/tcpdump/file$2 -Z root
+sudo tcpdump -ne -r /tmp/sysinfo/tcpdump/file$2> /tmp/sysinfo/tcpdump/file$2.dump; done

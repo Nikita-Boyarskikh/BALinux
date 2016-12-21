@@ -99,25 +99,47 @@ logs=$(ls -ult $appdir/history | tail -n+2 | to_html | \
       )
 
 net() {
-    for((i=0;i<((ls $temp_dir | wc -l));i++)); do ; done
+    count=$(ls $temp_dir/net | wc -l)
+    res=0
+    for ((i=0;i<$count;i++))
+    do
+        add=$(cat $temp_dir/net/$i | cut -d'
+' -f`echo $1`)
+        let "res += $add"
+    done
+    echo "scale=2; res /= $count" | bc
+    echo $res
 }
 
 iostat=$(iostat -xp | tail -n+6 | head -n-1 | to_html | \
 awk '{print "<tr><td>", $1, "</td><td>", $4, "</td><td>", $5, "</td><td>", $10, "</td><td>", $14, "</td></tr>"}')
 
 procfs=$(cat /proc/net/dev | tail -n+3 | to_html | \
-awk '{print "<tr><td>", $1, "</td><td></td><td>", $2, "</td><td>", $3, "</td><td>", $4, "</td><td>", $5, "</td><td>", $6, "</td><td>", $7, "</td><td>", $8, "</td><td>", $9, "</td><td></td><td>", $10, "</td><td>", $11, "</td><td>", $12, "</td><td>", $13, "</td><td>", $14, "</td><td>", $15, "</td><td>", $16, "</td><td>", $17, "</td></tr>"}')
+awk '{print "<tr><td>", $1, "</td><td></td><td>", $2, "</td><td>", $3, "</td><td>", $4, "</td><td>", $5, "</td><td>", $6, "</td><td>",
+             $7, "</td><td>", $8, "</td><td>", $9, "</td><td></td><td>", $10, "</td><td>", $11, "</td><td>", $12, "</td><td>", $13,
+             "</td><td>", $14, "</td><td>", $15, "</td><td>", $16, "</td><td>", $17, "</td></tr>"
+}')
 
-tcpdump=$(for((i=0;i<10;i++)); do cat $tempdir/tcpdump/$i.dump | perl -e '
+tcpdump=$(
+  length=0
+  for((i=0;i<10;i++))
+  do
+    add=$(cat $tempdir/tcpdump/$i.dump | perl -e '
         /length\s(?<length>\d+):.+proto\s(?<proto>\w+).+\n\D+(?<local>\d+\.\d+\.\d+\.\d+\.\d+)\D+(?<foreign>\d+\.\d+\.\d+\.\d+\.\d+)/;
-'; done)
+        print(join " ", keys %+);
+    '
+    let "length += $add"
+    echo $length
+  done
+)
 
 mpstat=$(mpstat -P ALL | tail -n+4  | sed -e 's/,/\./' | \
 awk '{print "<tr><td>", $2, "</td><td>", $3+$4, "</td><td>", $5, "</td><td>", $12, "</td><td>", $6, "</td></tr>"}')
 
 df=$(df --output=| to_html | tail -n+2| \
 awk '$6 !~ /^\/(dev|sys|proc)/ {
-     print "<tr><td>", $1, "</td><td>", $2, "</td><td>", $3, "</td><td>", $4, "</td><td>", $5, "</td><td></td><td>", $7, "</td><td>", $8, "</td><td>", $9, "</td><td>", $10, "</td><td>", $11, "</td></tr>"
+     print "<tr><td>", $1, "</td><td>", $2, "</td><td>", $3, "</td><td>", $4, "</td><td>", $5, "</td><td></td><td>", $7, "</td><td>",
+            $8, "</td><td>", $9, "</td><td>", $10, "</td><td>", $11, "</td></tr>"
 }')
 
 
@@ -162,9 +184,11 @@ cat <<HTML
     <h1>Загрузка сети</h1>
     <table class="procfs"><tbody>
     <tr><td rowspan=2>Inter-face</td><td rowspan=2></td><td colspan=8 align="center">Receive</td><td></td>
-        <td colspan=8 align="center">Transmit</td></tr>
+        <td colspan=8 align="center">Transmit</td>
+    </tr>
     <tr><td>bytes</td><td>packets</td><td>errs</td><td>drop</td><td>fifo</td><td>frame</td><td>compressed</td><td>multicast</td><td></td>
-        <td>bytes</td><td>packets</td><td>errs</td><td>drop</td><td>fifo</td><td>colls</td><td>carrier</td><td>compressed</td></tr>
+        <td>bytes</td><td>packets</td><td>errs</td><td>drop</td><td>fifo</td><td>colls</td><td>carrier</td><td>compressed</td>
+    </tr>
     $procfs
     </tbody></table>
 
@@ -187,8 +211,12 @@ cat <<HTML
 
     <h3>Количество tcp-соединений по состояниям:</h3>
     <table class="netstat"><tbody>
-    <tr><td>Состояние</td><td>ESTABLISHED</td><td>SYN_SENT</td><td>SYN_RECV</td><td>FIN_WAIT1</td><td>FIN_WAIT2</td><td>TIME_WAIT</td><td>CLOSE</td><td>CLOSE_WAIT</td><td>LAST_ASK</td><td>LISTEN</td><td>CLOSING</td><td>UNKNOWN</td></tr>
-    <tr><td>Соединение</td><td>$(net ESTABLISHED)</td><td>$(net SYN_SENT)</td><td>$(net SYN_RECV)</td><td>$(net FIN_WAIT1)</td><td>$(net FIN_WAIT2)</td><td>$(net TIME_WAIT)</td><td>$(net CLOSE)</td><td>$(net CLOSE_WAIT)</td><td>$(net LAST_ASK)</td><td>$(net LISTEN)</td><td>$(net CLOSING)</td><td>$(net UNKNOWN)</td></tr>
+    <tr><td>Состояние</td><td>ESTABLISHED</td><td>SYN_SENT</td><td>SYN_RECV</td><td>FIN_WAIT1</td><td>FIN_WAIT2</td><td>TIME_WAIT</td>
+        <td>CLOSE</td><td>CLOSE_WAIT</td><td>LAST_ASK</td><td>LISTEN</td><td>CLOSING</td><td>UNKNOWN</td>
+    </tr>
+    <tr><td>Соединение</td><td>$(net 1)</td><td>$(net 2)</td><td>$(net 3)</td><td>$(net 4)</td><td>$(net 5)</td><td>$(net 6)</td>
+        <td>$(net 7)</td><td>$(net 8)</td><td>$(net 9)</td><td>$(net 10)</td><td>$(net 11)</td><td>$(net 12)</td>
+    </tr>
     </tbody></table>
 
     <hr>
@@ -212,7 +240,7 @@ cat <<HTML
     $( if [[ $logs ]]
        then
            echo "<table class='history'><tbody>
-           <tr><td>Время записи</td><td>Файл лога</td></tr>
+          <tr><td>Время записи</td><td>Файл лога</td></tr>
            $logs
            </tbody></table>"
        else
