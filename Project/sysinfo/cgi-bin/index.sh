@@ -1,6 +1,7 @@
 #!/bin/bash
 
-$(for((i=0;i<10;i++));do cat /tmp/sysinfo/df-ahi$i cat /tmp/sysinfo/df-ah$i)
+appdir='/var/www/sysinfo'
+tempdir='/tmp/sysinfo'
 
 echo "Content-Type: text/html"
 echo
@@ -63,10 +64,6 @@ else
     fi
 fi
 
-logs=$(ls -ult /var/www/sysinfo/history | tail -n+2 | to_html | \
-       awk '{print "<tr><td>"$6" "$7" "$8"</td><td><a href=\"/sysinfo/history/"$9"\">"$9"</a></td></tr>"}'
-      )
-
 if [[ $(echo "($LoadAvg1 >= $Cores) || ($LoadAvg1 < 0.1*$Cores)" | bc) = 1 ]]
 then
     STYLE="$STYLE
@@ -97,9 +94,32 @@ then
            .loadavg3 { background-color:orange }"
 fi
 
+logs=$(ls -ult $appdir/history | tail -n+2 | to_html | \
+       awk '{print "<tr><td>"$6" "$7" "$8"</td><td><a href=\"/sysinfo/history/"$9"\">"$9"</a></td></tr>"}'
+      )
+
 net() {
-    netstat -ant | to_html | grep -c $1
+    for((i=0;i<((ls $temp_dir | wc -l));i++)); do ; done
 }
+
+iostat=$(iostat -xp | tail -n+6 | head -n-1 | to_html | \
+awk '{print "<tr><td>", $1, "</td><td>", $4, "</td><td>", $5, "</td><td>", $10, "</td><td>", $14, "</td></tr>"}')
+
+procfs=$(cat /proc/net/dev | tail -n+3 | to_html | \
+awk '{print "<tr><td>", $1, "</td><td></td><td>", $2, "</td><td>", $3, "</td><td>", $4, "</td><td>", $5, "</td><td>", $6, "</td><td>", $7, "</td><td>", $8, "</td><td>", $9, "</td><td></td><td>", $10, "</td><td>", $11, "</td><td>", $12, "</td><td>", $13, "</td><td>", $14, "</td><td>", $15, "</td><td>", $16, "</td><td>", $17, "</td></tr>"}')
+
+tcpdump=$(for((i=0;i<10;i++)); do cat $tempdir/tcpdump/$i.dump | perl -e '
+        /length\s(?<length>\d+):.+proto\s(?<proto>\w+).+\n\D+(?<local>\d+\.\d+\.\d+\.\d+\.\d+)\D+(?<foreign>\d+\.\d+\.\d+\.\d+\.\d+)/;
+'; done)
+
+mpstat=$(mpstat -P ALL | tail -n+4  | sed -e 's/,/\./' | \
+awk '{print "<tr><td>", $2, "</td><td>", $3+$4, "</td><td>", $5, "</td><td>", $12, "</td><td>", $6, "</td></tr>"}')
+
+df=$(df --output=| to_html | tail -n+2| \
+awk '$6 !~ /^\/(dev|sys|proc)/ {
+     print "<tr><td>", $1, "</td><td>", $2, "</td><td>", $3, "</td><td>", $4, "</td><td>", $5, "</td><td></td><td>", $7, "</td><td>", $8, "</td><td>", $9, "</td><td>", $10, "</td><td>", $11, "</td></tr>"
+}')
+
 
 cat <<HTML
 
@@ -135,26 +155,22 @@ cat <<HTML
     <hr>
     <h1>Загрузка дисков</h1>
     <table class="iostat"><tbody>
-        $(iostat -xp | tail -n+6 | head -n-1 | to_html | awk '{print "<tr><td>", $1, "</td><td>", $4, "</td><td>", $5, "</td><td>", $10, "</td><td>", $14, "</td></tr>"}')
+    $iostat
     </tbody></table>
 
     <hr>
     <h1>Загрузка сети</h1>
     <table class="procfs"><tbody>
-    <tr><td rowspan=2>Inter-
-                      face</td><td rowspan=2></td><td colspan=8 align="center">Receive</td><td></td><td colspan=8 align="center">Transmit</td></tr>
+    <tr><td rowspan=2>Inter-face</td><td rowspan=2></td><td colspan=8 align="center">Receive</td><td></td>
+        <td colspan=8 align="center">Transmit</td></tr>
     <tr><td>bytes</td><td>packets</td><td>errs</td><td>drop</td><td>fifo</td><td>frame</td><td>compressed</td><td>multicast</td><td></td>
         <td>bytes</td><td>packets</td><td>errs</td><td>drop</td><td>fifo</td><td>colls</td><td>carrier</td><td>compressed</td></tr>
-    $(cat /proc/net/dev | tail -n+3 | to_html | awk '{print "<tr><td>", $1, "</td><td></td><td>", $2, "</td><td>", $3, "</td><td>", $4, "</td><td>", $5, "</td><td>", $6, "</td><td>", $7, "</td><td>", $8, "</td><td>", $9, "</td><td></td><td>", $10, "</td><td>", $11, "</td><td>", $12, "</td><td>", $13, "</td><td>", $14, "</td><td>", $15, "</td><td>", $16, "</td><td>", $17, "</td></tr>"}')
+    $procfs
     </tbody></table>
 
     <hr>
     <h1>Top talkers</h1>
-    $(for((i=0;i<10;i++)); do cat /tmp/sysinfo/tcpdump/$i.dump | perl -e '
-        /length\s(?<length>\d+):.+proto\s(?<proto>\w+).+\n\D+(?<local>\d+\.\d+\.\d+\.\d+\.\d+)\D+(?<foreign>\d+\.\d+\.\d+\.\d+\.\d+)/;
-        '
-    done)
-
+    $tcpdump
     <hr>
     <h1>Информация о сетевых соединениях</h1>
     <h3>Слушающие сокеты:</h3>
@@ -179,14 +195,16 @@ cat <<HTML
     <h1>Средняя загрузка CPU</h1>
     <table class="cpu"><tbody>
     <tr><td>CPU</td><td>%user</td><td>%system</td><td>%idle</td><td>%iowait</td></tr>
-    $(mpstat -P ALL | tail -n+4  | sed -e 's/,/\./' | awk '{print "<tr><td>", $2, "</td><td>", $3+$4, "</td><td>", $5, "</td><td>", $12, "</td><td>", $6, "</td></tr>"}')
+    $mpstat
     </tbody></table>
 
     <hr>
     <h1>Информация о дисках</h1>
     <table class="df"><tbody>
-        <tr><td>Файловая система</td><td>Размер</td><td>Использовано</td><td>Доступно</td><td>Использовано%</td><td></td><td>Инодов всего</td><td>Инодов использовано</td><td>Инодов доступно</td><td>Инодов использовано%</td><td>Смонтировано в</td></tr>
-        $(df --output=| to_html | tail -n+2| awk '$6 !~ /^\/(dev|sys|proc)/ {print "<tr><td>", $1, "</td><td>", $2, "</td><td>", $3, "</td><td>", $4, "</td><td>", $5, "</td><td></td><td>", $7, "</td><td>", $8, "</td><td>", $9, "</td><td>", $10, "</td><td>", $11, "</td></tr>"}')
+    <tr><td>Файловая система</td><td>Размер</td><td>Использовано</td><td>Доступно</td><td>Использовано%</td><td></td>
+        <td>Инодов всего</td><td>Инодов использовано</td><td>Инодов доступно</td><td>Инодов использовано%</td><td>Смонтировано в</td>
+    </tr>
+    $df
     </tbody></table>
 
     <hr>

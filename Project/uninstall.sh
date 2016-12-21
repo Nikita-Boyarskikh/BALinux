@@ -13,7 +13,7 @@ rm /etc/apache2/sites-available/sysinfo.conf /etc/apache2/sites-enabled/sysinfo.
 # Удаляем исполняемые файлы
 rm -rf /var/www/sysinfo
 
-# Удаляем cron-задачи
+# Удаляем крон-задачи
 crontab -r
 rm -rf /tmp/sysinfo
 
