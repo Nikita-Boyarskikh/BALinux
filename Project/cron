@@ -1,5 +1,6 @@
 SHELL=/bin/bash
 MAILTO=N02@yandex.ru
 count=10
-* * * * * for((i=0;i<$count;i++));do sudo tcpdump -G 6 -W 1 -w /tmp/sysinfo/tcpdump/file$i -Z root; sudo tcpdump -ne -r /tmp/sysinfo/tcpdump/file$i> /tmp/sysinfo/tcpdump/file$i.dump; done
-* * * * * 
+log_count=288
+* * * * * for((i=0;i<$count;i++));do sudo tcpdump -G $((60/$count)) -W 1 -w /tmp/sysinfo/tcpdump/file$i -Z root; sudo tcpdump -ne -r /tmp/sysinfo/tcpdump/file$i> /tmp/sysinfo/tcpdump/file$i.dump; done
+@daily for((i=0;i<$log_count;i++));do sudo /var/www/sysinfo/cgi-bin/index.sh | tali -n+2 > $i.html; sleep $((86400/$log_count)); done

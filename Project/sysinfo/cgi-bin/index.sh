@@ -1,6 +1,6 @@
 #!/bin/bash
 
-        $(df -ahi>/tmp/sysinfo/df-ahi & df -ah>/tmp/sysinfo/df-ah)
+$(for((i=0;i<10;i++));do cat /tmp/sysinfo/df-ahi$i cat /tmp/sysinfo/df-ah$i)
 
 echo "Content-Type: text/html"
 echo
@@ -26,42 +26,79 @@ LoadAvg3=$(perl -e '`uptime` =~ /(\d+[\,|\.]\d+).*(\d+[\,\.]\d+).*(\d+[\,\.]\d+)
 
 Cores=$(cat /proc/cpuinfo | grep -c 'core id')
 
+if [[ $(echo "(($LoadAvg1 - $LoadAvg2) > 0.05*$Cores) && (($LoadAvg2 - $LoadAvg3) > 0.01*$Cores)" | bc) = 1 ]]
+then
+    Status="Наблюдается рост!"
+    if [[ $(echo "$LoadAvg1 < 0.3*$Cores" | bc) = 1 ]]
+    then
+        STYLE="$STYLE
+               .Status { color: green }"
+    elif [[ $(echo "$LoadAvg1+0.3 > $Cores" | bc) = 1 ]]
+    then
+        STYLE="$STYLE
+               .Status { color: red !important; text-decoration: bold }"
+    fi
+elif [[ $(echo "(($LoadAvg1 - $LoadAvg2) < -0.05*$Cores) && (($LoadAvg2 - $LoadAvg3) < -0.01*$Cores)" | bc) = 1 ]]
+then
+    Status="Наблюдается спад!"
+    if [[ $(echo "$LoadAvg1 < 0.3*$Cores" | bc) = 1 ]]
+    then
+        STYLE="$STYLE
+               .Status { color: red !important; text-decoration: bold }"
+    elif [[ $(echo "$LoadAvg1+0.3 > $Cores" | bc) = 1 ]]
+    then
+        STYLE="$STYLE
+               .Status { color: green }"
+    fi
+else
+    Status="Стабильно!"
+    if [[ $(echo "($LoadAvg1 < 0.1*$Cores) || ($LoadAvg1 >= $Cores)" | bc) = 1 ]]
+    then
+        STYLE="$STYLE
+               .Status { color: red !important; text-decoration: bold }"
+    elif [[ $(echo "(($LoadAvg1+0.3) < $Cores) && ($LoadAvg > 0.3*$Cores)" | bc) = 1 ]]
+    then
+        STYLE="$STYLE
+               .Status { color: green }"
+    fi
+fi
+
 logs=$(ls -ult /var/www/sysinfo/history | tail -n+2 | to_html | \
        awk '{print "<tr><td>"$6" "$7" "$8"</td><td><a href=\"/sysinfo/history/"$9"\">"$9"</a></td></tr>"}'
       )
 
-if [ $(echo "($LoadAvg1 > $Cores) || ($LoadAvg1 < 0.1*$Cores)" | bc) ]
+if [[ $(echo "($LoadAvg1 >= $Cores) || ($LoadAvg1 < 0.1*$Cores)" | bc) = 1 ]]
 then
     STYLE="$STYLE
            .loadavg1 { background-color:red !important}"
-elif [ $(echo "(($LoadAvg1 + 0.3) > $Cores) || ($LoadAvg1 < 0.3*$Cores)" | bc) ]
+elif [[ $(echo "(($LoadAvg1 + 0.3) > $Cores) || ($LoadAvg1 < 0.3*$Cores)" | bc) = 1 ]]
 then
     STYLE="$STYLE
            .loadavg1 { background-color:orange }"
 fi
 
-if [ $(echo "($LoadAvg2 > $Cores) || ($LoadAvg2 < 0.1*$Cores)" | bc) ]
+if [[ $(echo "($LoadAvg2 >= $Cores) || ($LoadAvg2 < 0.1*$Cores)" | bc) = 1 ]]
 then
     STYLE="$STYLE
            .loadavg2 { background-color:red !important}"
-elif [ $(echo "(($LoadAvg2 + 0.3) > $Cores) || ($LoadAvg2 < 0.3*$Cores)" | bc) ]
+elif [[ $(echo "(($LoadAvg2 + 0.3) > $Cores) || ($LoadAvg2 < 0.3*$Cores)" | bc) = 1 ]]
 then
     STYLE="$STYLE
            .loadavg2 { background-color:orange }"
 fi
 
-if [ $(echo "($LoadAvg3 > $Cores) || ($LoadAvg3 < 0.1*$Cores)" | bc) ]
+if [[ $(echo "($LoadAvg3 >= $Cores) || ($LoadAvg3 < 0.1*$Cores)" | bc) = 1 ]]
 then
     STYLE="$STYLE
            .loadavg3 { background-color:red !important}"
-elif [ $(echo "(($LoadAvg3 + 0.3) > $Cores) || ($LoadAvg3 < 0.3*$Cores)" | bc) ]
+elif [[ $(echo "(($LoadAvg3 + 0.3) > $Cores) || ($LoadAvg3 < 0.3*$Cores)" | bc) = 1 ]]
 then
     STYLE="$STYLE
            .loadavg3 { background-color:orange }"
 fi
 
 net() {
-    netstat -ant | grep -c $1
+    netstat -ant | to_html | grep -c $1
 }
 
 cat <<HTML
@@ -93,6 +130,7 @@ cat <<HTML
         <td class="loadavg3"><b>$LoadAvg3</b></td>
     </tr>
     </table></tbody>
+    <p class="Status">$Status</p>
 
     <hr>
     <h1>Загрузка дисков</h1>
@@ -112,25 +150,23 @@ cat <<HTML
 
     <hr>
     <h1>Top talkers</h1>
-    
-    tcpdump
+    $(for((i=0;i<10;i++)); do cat /tmp/sysinfo/tcpdump/$i.dump | perl -e '
+        /length\s(?<length>\d+):.+proto\s(?<proto>\w+).+\n\D+(?<local>\d+\.\d+\.\d+\.\d+\.\d+)\D+(?<foreign>\d+\.\d+\.\d+\.\d+\.\d+)/;
+        '
+    done)
 
     <hr>
     <h1>Информация о сетевых соединениях</h1>
     <h3>Слушающие сокеты:</h3>
     <table class="sockets"><tbody>
-    <tr><td rowspan=6>TCP</td><td>Протокол</td><td>$(netstat | grep STREAM | awk '{print "</td><td>", $1}')</td></tr>
-    <tr><td>Кол-во ссылок</td><td>$(netstat | grep STREAM | awk '{print "</td><td>", $2}')</td></tr>
-    <tr><td>Флаги</td><td>$(netstat | grep STREAM | awk '{if($4!="]"){print "</td><td>", $4}}')</td></tr>
-    <tr><td>Статус</td><td>$(netstat | grep STREAM | awk '{if($6 !~ /\d+/ && $4 == "]" || $7 !~ /\d+/ && $4 != "]"){ if($4!="]"){print "</td><td>", $7}else{print "</td><td>", $6} }}')</td></tr>
-    <tr><td>I-Node</td><td>$(netstat | grep STREAM | awk '{if($6 !~ /\d+/ && $4 == "]" || $7 !~ /\d+/ && $4 != "]"){ if($4!="]"){print "</td><td>", $8}else{print "</td><td>", $7} }else{ if($4!="]"){print "</td><td>", $7}else{print "</td><td>", $6} }}')</td></tr>
-    <tr><td>Файл</td><td>$(netstat | grep STREAM | awk '{if($NF !~ /\d+/){print "</td><td>", $NF}}')</td></tr>
-    <tr><td rowspan=6>UDP</td><td>Протокол</td><td>$(netstat | grep DGRAM | awk '{print "</td><td>", $1}')</td></tr>
-    <tr><td>Кол-во ссылок</td><td>$(netstat | grep DGRAM | awk '{print "</td><td>", $2}')</td></tr>
-    <tr><td>Флаги</td><td>$(netstat | grep DGRAM | awk '{if($4!="]"){print "</td><td>", $4}}')</td></tr>
-    <tr><td>Статус</td><td>$(netstat | grep DGRAM | awk '{if($6 !~ /\d+/ && $4 == "]" || $7 !~ /\d+/ && $4 != "]"){ if($4!="]"){print "</td><td>", $7}else{print "</td><td>", $6} }}')</td></tr>
-    <tr><td>I-Node</td><td>$(netstat | grep DGRAM | awk '{if($6 !~ /\d+/ && $4 == "]" || $7 !~ /\d+/ && $4 != "]"){ if($4!="]"){print "</td><td>", $8}else{print "</td><td>", $7} }else{ if($4!="]"){print "</td><td>", $7}else{print "</td><td>", $6} }}')</td></tr>
-    <tr><td>Файл</td><td>$(netstat | grep DGRAM | awk '{if($NF !~ /\d+/){print "</td><td>", $NF}}')</td></tr>
+    <tr><td rowspan=4>TCP</td><td>Очередь отправки</td><td>$(netstat -ant | awk '/^tcp/ {print $2}')</td></tr>
+    <tr><td>Очередь приёма</td><td>$(netstat -ant | awk '/^tcp/ {print $3}')</td></tr>
+    <tr><td>Локальный адрес</td><td>$(netstat -ant | awk '/^tcp/ {print $4}')</td></tr>
+    <tr><td>Удалённый адрес</td><td>$(netstat -ant | awk '/^tcp/ {print $5}')</td></tr>
+    <tr><td rowspan=4>UDP</td><td>Очередь отправки</td><td>$(netstat -ant | awk '/^udp/ {print $2}')</td></tr>
+    <tr><td>Очередь приёма</td><td>$(netstat -ant | awk '/^udp/ {print $3}')</td></tr>
+    <tr><td>Локальный адрес</td><td>$(netstat -ant | awk '/^udp/ {print $4}')</td></tr>
+    <tr><td>Удалённый адрес</td><td>$(netstat -ant | awk '/^udp/ {print $5}')</td></tr>
     </tbody></table>
 
     <h3>Количество tcp-соединений по состояниям:</h3>
@@ -150,12 +186,12 @@ cat <<HTML
     <h1>Информация о дисках</h1>
     <table class="df"><tbody>
         <tr><td>Файловая система</td><td>Размер</td><td>Использовано</td><td>Доступно</td><td>Использовано%</td><td></td><td>Инодов всего</td><td>Инодов использовано</td><td>Инодов доступно</td><td>Инодов использовано%</td><td>Смонтировано в</td></tr>
-        $(join /tmp/sysinfo/df-ah /tmp/sysinfo/df-ahi | to_html | tail -n+2| awk '$6 !~ /^\/(dev|sys|proc)/ {print "<tr><td>", $1, "</td><td>", $2, "</td><td>", $3, "</td><td>", $4, "</td><td>", $5, "</td><td></td><td>", $7, "</td><td>", $8, "</td><td>", $9, "</td><td>", $10, "</td><td>", $11, "</td></tr>"}')
+        $(df --output=| to_html | tail -n+2| awk '$6 !~ /^\/(dev|sys|proc)/ {print "<tr><td>", $1, "</td><td>", $2, "</td><td>", $3, "</td><td>", $4, "</td><td>", $5, "</td><td></td><td>", $7, "</td><td>", $8, "</td><td>", $9, "</td><td>", $10, "</td><td>", $11, "</td></tr>"}')
     </tbody></table>
 
     <hr>
     <h1>История:</h1>
-    $( if [ $logs ]
+    $( if [[ $logs ]]
        then
            echo "<table class='history'><tbody>
            <tr><td>Время записи</td><td>Файл лога</td></tr>
