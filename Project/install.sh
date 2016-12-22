@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # Устанавливаем необходимые утилиты
+apt-get -y update
+apt-get -y upgrade
 apt-get -y install apache2 nginx sysstat
 
 # Копируем конфиги для apache и включаем их в его include
