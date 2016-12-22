@@ -17,10 +17,8 @@ cp nginx/BALinux.conf /etc/nginx/sites-available/BALinux.conf
 
 # Копируем файлы проекта
 cp -R sysinfo /var/www/
-chmod 775 -R /var/www/sysinfo
 
 # Делаем исполняемыми крон-задачи и запускаем их
-chmod +x /var/www/sysinfo/cron/*
 crontab cron
 
 # Запускаем apache и nginx
