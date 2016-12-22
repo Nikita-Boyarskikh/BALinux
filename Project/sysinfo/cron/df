@@ -1,3 +1,4 @@
 #!/bin/bash
 df --output | tail -n+2 > /tmp/sysinfo/df$2
-sleep ((60/$1))
+let "n = 60 / $1"
+sleep $n
