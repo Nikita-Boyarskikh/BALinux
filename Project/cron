@@ -13,4 +13,4 @@ log_count=288
 * * * * * for((i=0;i<$netstat_count;i++));do sudo /var/www/sysinfo/cron/netstat.sh $netstat_count $i; done
 * * * * * for((i=0;i<$mpstat_count;i++));do sudo /var/www/sysinfo/cron/mpstat.sh $mpstat_count $i; done
 * * * * * for((i=0;i<$df_count;i++));do sudo /var/www/sysinfo/cron/df.sh $df_count $i; done
-@daily for((i=0;i<$log_count;i++));do sudo /var/www/sysinfo/cgi-bin/index.sh | tali -n+2 > $i.html; sleep $((86400/$log_count)); done
+@daily for((i=0;i<$log_count;i++));do sudo /var/www/sysinfo/cgi-bin/index.sh | tail -n+2 > /var/www/sysinfo/history/$i.html; let "n=86400/$log_count"; sleep $n; done

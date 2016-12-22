@@ -105,15 +105,15 @@ net() {
     do
         add=$(cat $tempdir/netstat/$i | cut -d'
 ' -f`echo $1`)
-        let "res += $add"
+        echo "res += $add"
     done
-    echo "scale=2; res /= $count" | bc
-    echo $res
+    res=$(echo "scale=1; $res/$count" | bc)
+    echo 0$res
 }
 
-iostat () {
+iostat() {
     dir=iostat
-    res1=$(cat $tempdir/$dir/0 | to_html | cut -d' ' -f1)
+    res1=$(cat $tempdir/$dir/0 | to_html | awk '{print $1}')
     res4=0
     res5=0
     res10=0
@@ -121,35 +121,61 @@ iostat () {
     res55=0
     res66=0
     count=$(ls $tempdir/$dir | wc -l)
+    echo "count /= 2"
     n=$(cat $tempdir/$dir/0 | wc -l)
-    let "n = n/2 + $1"
+    echo "n = n/2 + $1"
     for ((i=0;i<$count;i++))
     do
-        add4=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f4)
-        add5=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f5)
-        add10=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f10)
-        add14=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f14)
-        add55=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $n`)' | cut -d' ' -f5)
-        add66=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $n`)' | cut -d' ' -f6)
-        let "res4 += $add4"
-        let "res5 += $add5"
-        let "res10 += $add10"
-        let "res14 += $add14"
-        let "res55 += $add55"
-        let "res66 += $add66"
+        add4=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $4}')
+        add5=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $5}')
+        add10=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $10}')
+        add14=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $14}')
+        add55=$(cat $tempdir/$dir/$i-1 | awk "(NR == `echo $n`)" | awk '{print $5}')
+        add66=$(cat $tempdir/$dir/$i-1 | awk "(NR == `echo $n`)" | awk '{print $6}')
+        echo "res4 += $add4"
+        echo "res5 += $add5"
+        echo "res10 += $add10"
+        echo "res14 += $add14"
+        echo "res55 += $add55"
+        echo "res66 += $add66"
     done
-    echo "scale=2; res4 /= $count" | bc
-    echo "scale=2; res5 /= $count" | bc
-    echo "scale=2; res10 /= $count" | bc
-    echo "scale=2; res14 /= $count" | bc
-    echo "scale=2; res55 /= $count" | bc
-    echo "scale=2; res66 /= $count" | bc
+    res4=0
+    res5=0
+    res10=0
+    res14=0
+    res55=0
+    res66=0
+    count=$(ls $tempdir/$dir | wc -l)
+    echo "count /= 2"
+    n=$(cat $tempdir/$dir/0 | wc -l)
+    echo "n = n/2 + $1"
+    for ((i=0;i<$count;i++))
+    do
+        add4=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $4}')
+        add5=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $5}')
+        add10=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $10}')
+        add14=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $14}')
+        add55=$(cat $tempdir/$dir/$i-1 | awk "(NR == `echo $n`)" | awk '{print $5}')
+        add66=$(cat $tempdir/$dir/$i-1 | awk "(NR == `echo $n`)" | awk '{print $6}')
+        echo "res4 += $add4" | bc
+        echo "res5 += $add5" | bc
+        echo "res10 += $add10" | bc
+        echo "res14 += $add14" | bc
+        echo "res55 += $add55" | bc
+        echo "res66 += $add66" | bc
+    done
+    echo "scale=1; res4 /= $count" | bc
+    echo "scale=1; res5 /= $count" | bc
+    echo "scale=1; res10 /= $count" | bc
+    echo "scale=1; res14 /= $count" | bc
+    echo "scale=1; res55 /= $count" | bc
+    echo "scale=1; res66 /= $count" | bc
     echo "<tr><td> $res1 </td><td> $res55 </td><td> $res66 </td><td> $res4 </td><td> $res5 </td><td> $res10 </td><td> $res14 </td></tr>"
 }
 
-procfs () {
+procfs() {
     dir=procfs
-    res1=$(cat $tempdir/$dir/0 | to_html | cut -d' ' -f1)
+    res1=$(cat $tempdir/$dir/0 | to_html | awk '{print $1}')
     res2=0
     res3=0
     res4=0
@@ -169,63 +195,63 @@ procfs () {
     count=$(ls $tempdir/$dir | wc -l)
     for ((i=0;i<$count;i++))
     do
-        add2=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f2)
-        add3=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f3)
-        add4=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f4)
-        add5=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f5)
-        add6=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f6)
-        add7=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f7)
-        add8=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f8)
-        add9=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f9)
-        add10=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f10)
-        add11=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f11)
-        add12=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f12)
-        add13=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f13)
-        add14=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f14)
-        add15=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f15)
-        add16=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f16)
-        add17=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f17)
-        let "res2 += $add2"
-        let "res3 += $add3"
-        let "res4 += $add4"
-        let "res5 += $add5"
-        let "res6 += $add6"
-        let "res7 += $add7"
-        let "res8 += $add8"
-        let "res9 += $add9"
-        let "res10 += $add10"
-        let "res11 += $add11"
-        let "res12 += $add12"
-        let "res13 += $add13"
-        let "res14 += $add14"
-        let "res15 += $add15"
-        let "res16 += $add16"
-        let "res17 += $add17"
+        add2=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $2}')
+        add3=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $3}')
+        add4=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $4}')
+        add5=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $5}')
+        add6=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $6}')
+        add7=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $7}')
+        add8=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $8}')
+        add9=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $9}')
+        add10=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $10}')
+        add11=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $11}')
+        add12=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $12}')
+        add13=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $13}')
+        add14=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $14}')
+        add15=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $15}')
+        add16=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $16}')
+        add17=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $17}')
+        echo "res2 += $add2" | bc
+        echo "res3 += $add3" | bc
+        echo "res4 += $add4" | bc
+        echo "res5 += $add5" | bc
+        echo "res6 += $add6" | bc
+        echo "res7 += $add7" | bc
+        echo "res8 += $add8" | bc
+        echo "res9 += $add9" | bc
+        echo "res10 += $add10" | bc
+        echo "res11 += $add11" | bc
+        echo "res12 += $add12" | bc
+        echo "res13 += $add13" | bc
+        echo "res14 += $add14" | bc
+        echo "res15 += $add15" | bc
+        echo "res16 += $add16" | bc
+        echo "res17 += $add17" | bc
     done
-    echo "scale=2; res2 /= $count" | bc
-    echo "scale=2; res3 /= $count" | bc
-    echo "scale=2; res4 /= $count" | bc
-    echo "scale=2; res5 /= $count" | bc
-    echo "scale=2; res6 /= $count" | bc
-    echo "scale=2; res7 /= $count" | bc
-    echo "scale=2; res8 /= $count" | bc
-    echo "scale=2; res9 /= $count" | bc
-    echo "scale=2; res10 /= $count" | bc
-    echo "scale=2; res11 /= $count" | bc
-    echo "scale=2; res12 /= $count" | bc
-    echo "scale=2; res13 /= $count" | bc
-    echo "scale=2; res14 /= $count" | bc
-    echo "scale=2; res15 /= $count" | bc
-    echo "scale=2; res16 /= $count" | bc
-    echo "scale=2; res17 /= $count" | bc
+    echo "scale=1; res2 /= $count" | bc
+    echo "scale=1; res3 /= $count" | bc
+    echo "scale=1; res4 /= $count" | bc
+    echo "scale=1; res5 /= $count" | bc
+    echo "scale=1; res6 /= $count" | bc
+    echo "scale=1; res7 /= $count" | bc
+    echo "scale=1; res8 /= $count" | bc
+    echo "scale=1; res9 /= $count" | bc
+    echo "scale=1; res10 /= $count" | bc
+    echo "scale=1; res11 /= $count" | bc
+    echo "scale=1; res12 /= $count" | bc
+    echo "scale=1; res13 /= $count" | bc
+    echo "scale=1; res14 /= $count" | bc
+    echo "scale=1; res15 /= $count" | bc
+    echo "scale=1; res16 /= $count" | bc
+    echo "scale=1; res17 /= $count" | bc
     echo "<tr><td> $res1 </td><td></td><td> $res2 </td><td> $res3 </td><td> $res4 </td><td> $res5 </td><td> $res6 </td><td>\
           $res7 </td><td> $res8 </td><td> $res9 </td><td></td><td> $res10 </td><td> $res11 </td><td> $res12 </td><td> $res13 \
           </td><td> $res14 </td><td> $res15 </td><td> $res16 </td><td> $res17 </td></tr>"
 }
 
-mpstat () {
+mpstat() {
     dir=mpstat
-    res3=$(cat $tempdir/$dir/0 | to_html | cut -d' ' -f3)
+    res3=$(cat $tempdir/$dir/0 | to_html | awk '{print $3}')
     res45=0
     res6=0
     res13=0
@@ -233,29 +259,29 @@ mpstat () {
     count=$(ls $tempdir/$dir | wc -l)
     for ((i=0;i<$count;i++))
     do
-        add4=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f4)
-        add5=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f5)
-        add6=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f6)
-        add13=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f13)
-        add7=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $n`)' | cut -d' ' -f7)
-        let "res45 += $add5 + $add4"
-        let "res6 += $add6"
-        let "res13 += $add13"
-        let "res7 += $add7"
+        add4=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $4}')
+        add5=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $5}')
+        add6=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $6}')
+        add13=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $13}')
+        add7=$(cat $tempdir/$dir/$i | awk "(NR == `echo $n`)" | awk '{print $7}')
+        echo "res45 += $add5 + $add4" | bc
+        echo "res6 += $add6" | bc
+        echo "res13 += $add13" | bc
+        echo "res7 += $add7" | bc
     done
-    echo "scale=2; res45 /= $count" | bc
-    echo "scale=2; res6 /= $count" | bc
-    echo "scale=2; res13 /= $count" | bc
-    echo "scale=2; res7 /= $count" | bc
+    echo "scale=1; res45 /= $count" | bc
+    echo "scale=1; res6 /= $count" | bc
+    echo "scale=1; res13 /= $count" | bc
+    echo "scale=1; res7 /= $count" | bc
     echo "<tr><td> $res3 </td><td> $res45 </td><td> $res6 </td><td> $res13 </td><td> $res7  </td></tr>"
 }
 
-df () {
+df() {
     dir=df
-    res1=$(cat $tempdir/$dir/0 | to_html | cut -d' ' -f1)
-    res2=$(cat $tempdir/$dir/0 | to_html | cut -d' ' -f2)
-    res11=$(cat $tempdir/$dir/0 | to_html | cut -d' ' -f11)
-    res12=$(cat $tempdir/$dir/0 | to_html | cut -d' ' -f12)
+    res1=$(cat $tempdir/$dir/0 | to_html | awk '{print $1}')
+    res2=$(cat $tempdir/$dir/0 | to_html | awk '{print $2}')
+    res11=$(cat $tempdir/$dir/0 | to_html | awk '{print $11}')
+    res12=$(cat $tempdir/$dir/0 | to_html | awk '{print $12}')
     res3=0
     res4=0
     res5=0
@@ -267,31 +293,31 @@ df () {
     count=$(ls $tempdir/$dir | wc -l)
     for ((i=0;i<$count;i++))
     do
-        add3=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f3)
-        add4=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f4)
-        add5=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f5)
-        add6=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f6)
-        add7=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $n`)' | cut -d' ' -f7)
-        add8=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f8)
-        add9=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f9)
-        add10=$(cat $tempdir/$dir/$i | awk '(NR == $`echo $n`)' | cut -d' ' -f10)
+        add3=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $3}')
+        add4=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $4}')
+        add5=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $5}')
+        add6=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $6}')
+        add7=$(cat $tempdir/$dir/$i | awk "(NR == `echo $n`)" | awk '{print $7}')
+        add8=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $8}')
+        add9=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $9}')
+        add10=$(cat $tempdir/$dir/$i | awk "(NR == `echo $n`)" | awk '{print $10}')
         add6=${adds6::${#add6}-1}
         add10=${add10::${#add10}-1}
-        let "res4 += $add4"
-        let "res5 += $add5"
-        let "res6 += $add6"
-        let "res7 += $add7"
-        let "res8 += $add8"
-        let "res9 += $add9"
-        let "res10 += $add10"
+        echo "res4 += $add4" | bc
+        echo "res5 += $add5" | bc
+        echo "res6 += $add6" | bc
+        echo "res7 += $add7" | bc
+        echo "res8 += $add8" | bc
+        echo "res9 += $add9" | bc
+        echo "res10 += $add10" | bc
     done
-    echo "scale=2; res4 /= $count" | bc
-    echo "scale=2; res5 /= $count" | bc
-    echo "scale=2; res6 /= $count" | bc
-    echo "scale=2; res7 /= $count" | bc
-    echo "scale=2; res8 /= $count" | bc
-    echo "scale=2; res9 /= $count" | bc
-    echo "scale=2; res10 /= $count" | bc
+    echo "scale=1; res4 /= $count" | bc
+    echo "scale=1; res5 /= $count" | bc
+    echo "scale=1; res6 /= $count" | bc
+    echo "scale=1; res7 /= $count" | bc
+    echo "scale=1; res8 /= $count" | bc
+    echo "scale=1; res9 /= $count" | bc
+    echo "scale=1; res10 /= $count" | bc
     echo "<tr><td> $res1 </td><td> $res2 </td><td> $res3 </td><td> $res4 </td><td> $res5 </td><td></td><td> $res6 </td>\
     <td> $res7 </td> $res8 </td><td> $res9 </td><td> $res10 </td><td> $res11 </td><td> $res12 </td></tr>"
 }
