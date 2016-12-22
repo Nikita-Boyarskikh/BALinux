@@ -103,7 +103,7 @@ net() {
     res=0
     for ((i=0;i<$count;i++))
     do
-        add=$(cat $temp_dir/net/$i | cut -d'
+        add=$(cat $temp_dir/netstat/$i | cut -d'
 ' -f`echo $1`)
         let "res += $add"
     done
@@ -111,37 +111,218 @@ net() {
     echo $res
 }
 
-iostat=$(
-iostat -xp | tail -n+6 | head -n-1 | to_html | \
-awk '{print "<tr><td>", $1, "</td><td>", $4, "</td><td>", $5, "</td><td>", $10, "</td><td>", $14, "</td></tr>"}')
+iostat () {
+    dir=iostat
+    res1=$(cat $temp_dir/$dir/0 | to_html | cut -d' ' -f1)
+    res4=0
+    res5=0
+    res10=0
+    res14=0
+    res55=0
+    res66=0
+    count=$(ls $temp_dir/$dir | wc -l)
+    n=$(cat $temp_dir/$dir/0 | wc -l)
+    let "n = n/2 + $1"
+    for ((i=0;i<$count;i++))
+    do
+        add4=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f4)
+        add5=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f5)
+        add10=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f10)
+        add14=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f14)
+        add55=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $n`)' | cut -d' ' -f5)
+        add66=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $n`)' | cut -d' ' -f6)
+        let "res4 += $add4"
+        let "res5 += $add5"
+        let "res10 += $add10"
+        let "res14 += $add14"
+        let "res55 += $add55"
+        let "res66 += $add66"
+    done
+    echo "scale=2; res4 /= $count" | bc
+    echo "scale=2; res5 /= $count" | bc
+    echo "scale=2; res10 /= $count" | bc
+    echo "scale=2; res14 /= $count" | bc
+    echo "scale=2; res55 /= $count" | bc
+    echo "scale=2; res66 /= $count" | bc
+    echo "<tr><td> $res1 </td><td> $res55 </td><td> $res66 </td><td> $res4 </td><td> $res5 </td><td> $res10 </td><td> $res14 </td></tr>"
+}
 
-procfs=$(cat /proc/net/dev | tail -n+3 | to_html | \
-awk '{print "<tr><td>", $1, "</td><td></td><td>", $2, "</td><td>", $3, "</td><td>", $4, "</td><td>", $5, "</td><td>", $6, "</td><td>",
-             $7, "</td><td>", $8, "</td><td>", $9, "</td><td></td><td>", $10, "</td><td>", $11, "</td><td>", $12, "</td><td>", $13,
-             "</td><td>", $14, "</td><td>", $15, "</td><td>", $16, "</td><td>", $17, "</td></tr>"
-}')
+procfs () {
+    dir=procfs
+    res1=$(cat $temp_dir/$dir/0 | to_html | cut -d' ' -f1)
+    res2=0
+    res3=0
+    res4=0
+    res5=0
+    res6=0
+    res7=0
+    res8=0
+    res9=0
+    res10=0
+    res11=0
+    res12=0
+    res13=0
+    res14=0
+    res15=0
+    res16=0
+    res17=0
+    count=$(ls $temp_dir/$dir | wc -l)
+    for ((i=0;i<$count;i++))
+    do
+        add2=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f2)
+        add3=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f3)
+        add4=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f4)
+        add5=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f5)
+        add6=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f6)
+        add7=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f7)
+        add8=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f8)
+        add9=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f9)
+        add10=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f10)
+        add11=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f11)
+        add12=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f12)
+        add13=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f13)
+        add14=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f14)
+        add15=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f15)
+        add16=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f16)
+        add17=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f17)
+        let "res2 += $add2"
+        let "res3 += $add3"
+        let "res4 += $add4"
+        let "res5 += $add5"
+        let "res6 += $add6"
+        let "res7 += $add7"
+        let "res8 += $add8"
+        let "res9 += $add9"
+        let "res10 += $add10"
+        let "res11 += $add11"
+        let "res12 += $add12"
+        let "res13 += $add13"
+        let "res14 += $add14"
+        let "res15 += $add15"
+        let "res16 += $add16"
+        let "res17 += $add17"
+    done
+    echo "scale=2; res2 /= $count" | bc
+    echo "scale=2; res3 /= $count" | bc
+    echo "scale=2; res4 /= $count" | bc
+    echo "scale=2; res5 /= $count" | bc
+    echo "scale=2; res6 /= $count" | bc
+    echo "scale=2; res7 /= $count" | bc
+    echo "scale=2; res8 /= $count" | bc
+    echo "scale=2; res9 /= $count" | bc
+    echo "scale=2; res10 /= $count" | bc
+    echo "scale=2; res11 /= $count" | bc
+    echo "scale=2; res12 /= $count" | bc
+    echo "scale=2; res13 /= $count" | bc
+    echo "scale=2; res14 /= $count" | bc
+    echo "scale=2; res15 /= $count" | bc
+    echo "scale=2; res16 /= $count" | bc
+    echo "scale=2; res17 /= $count" | bc
+    echo "<tr><td> $res1 </td><td></td><td> $res2 </td><td> $res3 </td><td> $res4 </td><td> $res5 </td><td> $res6 </td><td>\
+          $res7 </td><td> $res8 </td><td> $res9 </td><td></td><td> $res10 </td><td> $res11 </td><td> $res12 </td><td> $res13 \
+          </td><td> $res14 </td><td> $res15 </td><td> $res16 </td><td> $res17 </td></tr>"
+}
 
 tcpdump=$(
-  length=0
-  for((i=0;i<10;i++))
-  do
-    add=$(cat $tempdir/tcpdump/$i.dump | perl -e '
-        /length\s(?<length>\d+):.+proto\s(?<proto>\w+).+\n\D+(?<local>\d+\.\d+\.\d+\.\d+\.\d+)\D+(?<foreign>\d+\.\d+\.\d+\.\d+\.\d+)/;
-        print(join " ", keys %+);
-    '
-    let "length += $add"
-    echo $length
-  done
+    dir=tcpdump
+    len=0
+    proto=0
+    lip=0
+    fip=0
+    count=$(ls $temp_dir/$dir | wc -l)
+    for ((i=0;i<$count;i++))
+    do
+        add1=$(cat $temp_dir/$dir/$i | cut -d' ' -f1)
+        add4=$(cat $temp_dir/$dir/$i | cut -d' ' -f4)
+        add5=$(cat $temp_dir/$dir/$i | cut -d' ' -f5)
+        add10=$(cat $temp_dir/$dir/$i | cut -d' ' -f10)
+        add14=$(cat $temp_dir/$dir/$i | cut -d' ' -f14)
+        let "res1 += $add1"
+        let "res4 += $add4"
+        let "res5 += $add5"
+        let "res10 += $add10"
+        let "res14 += $add14"
+    done
+    echo "scale=2; res1 /= $count" | bc
+    echo "scale=2; res4 /= $count" | bc
+    echo "scale=2; res5 /= $count" | bc
+    echo "scale=2; res10 /= $count" | bc
+    echo "scale=2; res14 /= $count" | bc
+    echo 
 )
 
-mpstat=$(mpstat -P ALL | tail -n+4  | sed -e 's/,/\./' | \
-awk '{print "<tr><td>", $2, "</td><td>", $3+$4, "</td><td>", $5, "</td><td>", $12, "</td><td>", $6, "</td></tr>"}')
+mpstat () {
+    dir=mpstat
+    res3=$(cat $temp_dir/$dir/0 | to_html | cut -d' ' -f3)
+    res45=0
+    res6=0
+    res13=0
+    res7=0
+    count=$(ls $temp_dir/$dir | wc -l)
+    for ((i=0;i<$count;i++))
+    do
+        add4=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f4)
+        add5=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f5)
+        add6=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f6)
+        add13=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f13)
+        add7=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $n`)' | cut -d' ' -f7)
+        let "res45 += $add5 + $add4"
+        let "res6 += $add6"
+        let "res13 += $add13"
+        let "res7 += $add7"
+    done
+    echo "scale=2; res45 /= $count" | bc
+    echo "scale=2; res6 /= $count" | bc
+    echo "scale=2; res13 /= $count" | bc
+    echo "scale=2; res7 /= $count" | bc
+    echo "<tr><td> $res3 </td><td> $res45 </td><td> $res6 </td><td> $res13 </td><td> $res7  </td></tr>"
+}
 
-df=$(df --output | to_html | tail -n+2| \
-awk '$6 !~ /^\/(dev|sys|proc)/ {
-     print "<tr><td>", $1, "</td><td>", $2, "</td><td>", $3, "</td><td>", $4, "</td><td>", $5, "</td><td></td><td>", $7, "</td><td>",
-            $8, "</td><td>", $9, "</td><td>", $10, "</td><td>", $11, "</td></tr>"
-}')
+df () {
+    dir=df
+    res1=$(cat $temp_dir/$dir/0 | to_html | cut -d' ' -f1)
+    res2=$(cat $temp_dir/$dir/0 | to_html | cut -d' ' -f2)
+    res11=$(cat $temp_dir/$dir/0 | to_html | cut -d' ' -f11)
+    res12=$(cat $temp_dir/$dir/0 | to_html | cut -d' ' -f12)
+    res3=0
+    res4=0
+    res5=0
+    res6=0
+    res7=0
+    res8=0
+    res9=0
+    res10=0
+    count=$(ls $temp_dir/$dir | wc -l)
+    for ((i=0;i<$count;i++))
+    do
+        add3=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f3)
+        add4=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f4)
+        add5=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f5)
+        add6=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f6)
+        add7=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $n`)' | cut -d' ' -f7)
+        add8=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f8)
+        add9=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $1`)' | cut -d' ' -f9)
+        add10=$(cat $temp_dir/$dir/$i | awk '(NR == $`echo $n`)' | cut -d' ' -f10)
+        add6=${adds6::${#add6}-1}
+        add10=${add10::${#add10}-1}
+        let "res4 += $add4"
+        let "res5 += $add5"
+        let "res6 += $add6"
+        let "res7 += $add7"
+        let "res8 += $add8"
+        let "res9 += $add9"
+        let "res10 += $add10"
+    done
+    echo "scale=2; res4 /= $count" | bc
+    echo "scale=2; res5 /= $count" | bc
+    echo "scale=2; res6 /= $count" | bc
+    echo "scale=2; res7 /= $count" | bc
+    echo "scale=2; res8 /= $count" | bc
+    echo "scale=2; res9 /= $count" | bc
+    echo "scale=2; res10 /= $count" | bc
+    echo "<tr><td> $res1 </td><td> $res2 </td><td> $res3 </td><td> $res4 </td><td> $res5 </td><td></td><td> $res6 </td>\
+    <td> $res7 </td> $res8 </td><td> $res9 </td><td> $res10 </td><td> $res11 </td><td> $res12 </td></tr>"
+}
 
 
 cat <<HTML
@@ -178,7 +359,8 @@ cat <<HTML
     <hr>
     <h1>Загрузка дисков</h1>
     <table class="iostat"><tbody>
-    $iostat
+    <tr><td>Устройство</td><td>Всего прочитано (Кб)</td><td>Всего записано (Кб)</td><td>Чтение (Кб/c)</td><td>Запись (Кб/с)</td><td>Время обработки запроса (мс)</td><td>% утилизации</td></tr>
+    $(n=$(cat $temp_dir/iostat/0 | wc -l); for ((i=0;i<$n;i++)); do iostat $i; done)
     </tbody></table>
 
     <hr>
@@ -190,12 +372,13 @@ cat <<HTML
     <tr><td>bytes</td><td>packets</td><td>errs</td><td>drop</td><td>fifo</td><td>frame</td><td>compressed</td><td>multicast</td><td></td>
         <td>bytes</td><td>packets</td><td>errs</td><td>drop</td><td>fifo</td><td>colls</td><td>carrier</td><td>compressed</td>
     </tr>
-    $procfs
+    $(n=$(cat $temp_dir/procfs/0 | wc -l); for ((i=0;i<$n;i++)); do procfs $i; done)
     </tbody></table>
 
     <hr>
     <h1>Top talkers</h1>
-    $tcpdump
+    tcpdump
+    
     <hr>
     <h1>Информация о сетевых соединениях</h1>
     <h3>Слушающие сокеты:</h3>
@@ -224,7 +407,7 @@ cat <<HTML
     <h1>Средняя загрузка CPU</h1>
     <table class="cpu"><tbody>
     <tr><td>CPU</td><td>%user</td><td>%system</td><td>%idle</td><td>%iowait</td></tr>
-    $mpstat
+    $(n=$(cat $temp_dir/mpstat/0 | wc -l); for ((i=0;i<$n;i++)); do mpstat $i; done)
     </tbody></table>
 
     <hr>
@@ -233,7 +416,7 @@ cat <<HTML
     <tr><td>Файловая система</td><td>Размер</td><td>Использовано</td><td>Доступно</td><td>Использовано%</td><td></td>
         <td>Инодов всего</td><td>Инодов использовано</td><td>Инодов доступно</td><td>Инодов использовано%</td><td>Смонтировано в</td>
     </tr>
-    $df
+    $(n=$(cat $temp_dir/df/0 | wc -l); for ((i=0;i<$n;i++)); do df $i; done)
     </tbody></table>
 
     <hr>
