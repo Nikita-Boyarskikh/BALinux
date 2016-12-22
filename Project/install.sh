@@ -1,9 +1,6 @@
 #!/bin/bash
 
 # Устанавливаем необходимые утилиты
-apt-get -y update
-apt-get -y clean
-apt-get -y upgrade
 apt-get -y install apache2 nginx sysstat
 
 # Копируем конфиги для apache и включаем их в его include
@@ -19,9 +16,6 @@ ln -s /etc/nginx/sites-available/BALinux.conf /etc/nginx/sites-enabled/BALinux.c
 # Копируем файлы проекта
 cp -R sysinfo /var/www/sysinfo/
 chmod 775 -R /var/www/sysinfo
-
-# Делаем исполняемыми скрипты крон-задач
-chmod +x /var/www/sysinfo/cron/*
 
 # Создаём крон-задачи и директории им для хранения данных
 mkdir /tmp/sysinfo
