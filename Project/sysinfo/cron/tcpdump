@@ -5,4 +5,5 @@ perl -e '
     /length\s(?<length>\d+):.+proto\s(?<proto>\w+).+\n\D+(?<local>\d+\.\d+\.\d+\.\d+\.\d+)\D+(?<foreign>\d+\.\d+\.\d+\.\d+\.\d+)/;
     print(join " ", keys %+);
 ' > /tmp/sysinfo/tcpdump/file$2.dump
-sleep ((60/$1))
+let "n = 60 / $1"
+sleep $n
