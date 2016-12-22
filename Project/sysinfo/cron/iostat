@@ -1,3 +1,5 @@
 #!/bin/bash
-iostat -xp | tail -n+6 | head -n-1 > /tmp/iostat$2
-sleep ((60/$1))
+let "n = $(cat /proc/cpuinfo | grep -c 'core id') + 3"
+iostat -xpd | tail -n+4 | head -n-1 > /tmp/iostat$2
+let "n = 60 / $1"
+sleep $n
