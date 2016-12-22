@@ -1,3 +1,4 @@
+#!/bin/bash
 netstat -ant | to_html | grep -c ESTABLISHED > /tmp/netstat$2
 netstat -ant | to_html | grep -c SYN_SENT >> /tmp/netstat$2
 netstat -ant | to_html | grep -c SYN_RECV >> /tmp/netstat$2
