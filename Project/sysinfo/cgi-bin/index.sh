@@ -99,7 +99,7 @@ logs=$(ls -ult $appdir/history | tail -n+2 | to_html | \
       )
 
 net() {
-    count=$(ls $temp_dir/net | wc -l)
+    count=$(ls $temp_dir/netstat | wc -l)
     res=0
     for ((i=0;i<$count;i++))
     do
@@ -111,7 +111,8 @@ net() {
     echo $res
 }
 
-iostat=$(iostat -xp | tail -n+6 | head -n-1 | to_html | \
+iostat=$(
+iostat -xp | tail -n+6 | head -n-1 | to_html | \
 awk '{print "<tr><td>", $1, "</td><td>", $4, "</td><td>", $5, "</td><td>", $10, "</td><td>", $14, "</td></tr>"}')
 
 procfs=$(cat /proc/net/dev | tail -n+3 | to_html | \
@@ -136,7 +137,7 @@ tcpdump=$(
 mpstat=$(mpstat -P ALL | tail -n+4  | sed -e 's/,/\./' | \
 awk '{print "<tr><td>", $2, "</td><td>", $3+$4, "</td><td>", $5, "</td><td>", $12, "</td><td>", $6, "</td></tr>"}')
 
-df=$(df --output=| to_html | tail -n+2| \
+df=$(df --output | to_html | tail -n+2| \
 awk '$6 !~ /^\/(dev|sys|proc)/ {
      print "<tr><td>", $1, "</td><td>", $2, "</td><td>", $3, "</td><td>", $4, "</td><td>", $5, "</td><td></td><td>", $7, "</td><td>",
             $8, "</td><td>", $9, "</td><td>", $10, "</td><td>", $11, "</td></tr>"
