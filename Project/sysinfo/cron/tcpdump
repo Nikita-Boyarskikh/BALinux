@@ -1,3 +1,4 @@
+#!/bin/bash
 sudo tcpdump -W 1 -w /tmp/sysinfo/tcpdump/file$2 -Z root
-sudo tcpdump -ne -r /tmp/sysinfo/tcpdump/file$2 > /tmp/sysinfo/tcpdump/file$2.dump
+sudo tcpdump -nevv -r /tmp/sysinfo/tcpdump/file$2 > /tmp/sysinfo/tcpdump/file$2.dump
 sleep ((60/$1))
