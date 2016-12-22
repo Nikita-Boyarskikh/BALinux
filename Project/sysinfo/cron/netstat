@@ -11,4 +11,5 @@ netstat -ant | to_html | grep -c LAST_ASK >> /tmp/netstat$2
 netstat -ant | to_html | grep -c LISTEN >> /tmp/netstat$2
 netstat -ant | to_html | grep -c CLOSING >> /tmp/netstat$2
 netstat -ant | to_html | grep -c UNKNOWN >> /tmp/netstat$2
-sleep ((60/$1))
+let "n = 60 / $1"
+sleep $n
