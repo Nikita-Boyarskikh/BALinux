@@ -234,11 +234,10 @@ dfree() {
         add4=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $4}')
         add5=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $5}')
         add6=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $6}')
-        add7=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $7}')
-        add8=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $8}')
-        add9=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $9}')
+        add7=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $8}')
+        add8=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $9}')
         add10=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $10}')
-        add6=${adds6::${#add6}-1}
+        add6=${add6::${#add6}-1}
         add10=${add10::${#add10}-1}
         res3=$(echo "$res3 + $add3" | bc)
         res4=$(echo "$res4 + $add4" | bc)
@@ -246,7 +245,6 @@ dfree() {
         res6=$(echo "$res6 + $add6" | bc)
         res7=$(echo "$res7 + $add7" | bc)
         res8=$(echo "$res8 + $add8" | bc)
-        res9=$(echo "$res9 + $add9" | bc)
         res10=$(echo "$res10 + $add10" | bc)
     done
     res3=$(echo "scale=1; $res3 / $count" | bc)
@@ -255,10 +253,9 @@ dfree() {
     res6=$(echo "scale=1; $res6 / $count" | bc)
     res7=$(echo "scale=1; $res7 / $count" | bc)
     res8=$(echo "scale=1; $res8 / $count" | bc)
-    res9=$(echo "scale=1; $res9 / $count" | bc)
     res10=$(echo "scale=1; $res10 / $count" | bc)
-    echo "<tr><td> $res1 </td><td> $res2 </td><td> $res3 </td><td> $res4 </td><td> $res5 </td><td> $res6 </td>\
-    <td> $res7 </td> $res8 </td><td> $res9 </td><td> $res10 </td><td> $res11 </td><td> $res12 </td></tr>"
+    echo "<tr><td> $res1 </td><td> $res2 </td><td> $res3 </td><td> $res4 </td><td> $res5 </td><td> $res6 </td><td></td>\
+    <td> $res7 </td><td> $res8 </td><td> $res10 </td><td> $res11 </td><td> $res12 </td></tr>"
 }
 
 ios() {
@@ -346,6 +343,7 @@ cat <<HTML
     $(num=$(cat $tempdir/procfs/0 | wc -l); for ((c=1;c<=$num;c++)); do proc $c; done)
     </tbody></table>
 
+$(num=$(cat $tempdir/df/0 | wc -l); for ((c=1;c<=$num;c++)); do dfree $c; done)
     <hr>
     <h1>Top talkers</h1>
     tcpdump
