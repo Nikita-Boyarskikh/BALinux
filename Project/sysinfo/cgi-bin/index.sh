@@ -103,17 +103,16 @@ net() {
     res=0
     for ((i=0;i<$count;i++))
     do
-        add=$(cat $tempdir/netstat/$i | cut -d'
-' -f`echo $1`)
+        add=$(cat $tempdir/netstat/$i | awk "(NR == $1)")
         res=$(echo "$res + $add" | bc)
     done
-    res=$(echo "scale=1; $res/$count" | bc)
-    echo 0$res
+    res=$(echo "scale=1; $res / $count" | bc)
+    echo $res
 }
 
 proc() {
     dir=procfs
-    res1=$(cat $tempdir/$dir/0 | to_html | awk '{print $1}')
+    res1=$(cat $tempdir/$dir/0 | to_html | awk "(NR == $1)" | awk '{print $1}')
     res2=0
     res3=0
     res4=0
@@ -133,22 +132,22 @@ proc() {
     count=$(ls $tempdir/$dir | wc -l)
     for ((i=0;i<$count;i++))
     do
-        add2=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $2}')
-        add3=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $3}')
-        add4=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $4}')
-        add5=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $5}')
-        add6=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $6}')
-        add7=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $7}')
-        add8=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $8}')
-        add9=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $9}')
-        add10=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $10}')
-        add11=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $11}')
-        add12=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $12}')
-        add13=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $13}')
-        add14=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $14}')
-        add15=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $15}')
-        add16=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $16}')
-        add17=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $17}')
+        add2=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $2}')
+        add3=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $3}')
+        add4=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $4}')
+        add5=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $5}')
+        add6=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $6}')
+        add7=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $7}')
+        add8=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $8}')
+        add9=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $9}')
+        add10=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $10}')
+        add11=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $11}')
+        add12=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $12}')
+        add13=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $13}')
+        add14=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $14}')
+        add15=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $15}')
+        add16=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $16}')
+        add17=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $17}')
         res2=$(echo "$res2 + $add2" | bc)
         res3=$(echo "$res3 + $add3" | bc)
         res4=$(echo "$res4 + $add4" | bc)
@@ -189,7 +188,7 @@ proc() {
 
 mps() {
     dir=mpstat
-    res3=$(cat $tempdir/$dir/0 | to_html | awk '{print $3}')
+    res3=$(cat $tempdir/$dir/0 | to_html | awk "(NR == $1)" | awk '{print $3}')
     res45=0
     res6=0
     res13=0
@@ -197,11 +196,11 @@ mps() {
     count=$(ls $tempdir/$dir | wc -l)
     for ((i=0;i<$count;i++))
     do
-        add4=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $4}')
-        add5=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $5}')
-        add6=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $6}')
-        add13=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $13}')
-        add7=$(cat $tempdir/$dir/$i | awk "(NR == `echo $n`)" | awk '{print $7}')
+        add4=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $4}')
+        add5=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $5}')
+        add6=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $6}')
+        add13=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $13}')
+        add7=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $7}')
         res45=$(echo "$res45 + $add5 + $add4" | bc)
         res6=$(echo "$res6 + $add6" | bc)
         res13=$(echo "$res13 + $add13" | bc)
@@ -216,10 +215,10 @@ mps() {
 
 dfree() {
     dir=df
-    res1=$(cat $tempdir/$dir/0 | to_html | awk '{print $1}')
-    res2=$(cat $tempdir/$dir/0 | to_html | awk '{print $2}')
-    res11=$(cat $tempdir/$dir/0 | to_html | awk '{print $11}')
-    res12=$(cat $tempdir/$dir/0 | to_html | awk '{print $12}')
+    res1=$(cat $tempdir/$dir/0 | to_html | awk "(NR == $1)" |  awk '{print $1}')
+    res2=$(cat $tempdir/$dir/0 | to_html | awk "(NR == $1)" | awk '{print $2}')
+    res11=$(cat $tempdir/$dir/0 | to_html | awk "(NR == $1)" | awk '{print $11}')
+    res12=$(cat $tempdir/$dir/0 | to_html | awk "(NR == $1)" | awk '{print $12}')
     res3=0
     res4=0
     res5=0
@@ -231,16 +230,17 @@ dfree() {
     count=$(ls $tempdir/$dir | wc -l)
     for ((i=0;i<$count;i++))
     do
-        add3=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $3}')
-        add4=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $4}')
-        add5=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $5}')
-        add6=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $6}')
-        add7=$(cat $tempdir/$dir/$i | awk "(NR == `echo $n`)" | awk '{print $7}')
-        add8=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $8}')
-        add9=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $9}')
-        add10=$(cat $tempdir/$dir/$i | awk "(NR == `echo $n`)" | awk '{print $10}')
+        add3=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $3}')
+        add4=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $4}')
+        add5=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $5}')
+        add6=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $6}')
+        add7=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $7}')
+        add8=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $8}')
+        add9=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $9}')
+        add10=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $10}')
         add6=${adds6::${#add6}-1}
         add10=${add10::${#add10}-1}
+        res3=$(echo "$res3 + $add3" | bc)
         res4=$(echo "$res4 + $add4" | bc)
         res5=$(echo "$res5 + $add5" | bc)
         res6=$(echo "$res6 + $add6" | bc)
@@ -249,6 +249,7 @@ dfree() {
         res9=$(echo "$res9 + $add9" | bc)
         res10=$(echo "$res10 + $add10" | bc)
     done
+    res3=$(echo "scale=1; $res3 / $count" | bc)
     res4=$(echo "scale=1; $res4 / $count" | bc)
     res5=$(echo "scale=1; $res5 / $count" | bc)
     res6=$(echo "scale=1; $res6 / $count" | bc)
@@ -262,7 +263,7 @@ dfree() {
 
 ios() {
     dir=iostat
-    res1=$(cat $tempdir/$dir/0 | to_html | awk '{print $1}')
+    res1=$(cat $tempdir/$dir/0 | to_html | awk "(NR == $1)" | awk '{print $1}')
     res4=0
     res5=0
     res10=0
@@ -272,15 +273,15 @@ ios() {
     count=$(ls $tempdir/$dir | wc -l)
     count=$(echo "$count / 2" | bc)
     n=$(cat $tempdir/$dir/0 | wc -l)
-    n=$(echo "$n/2 + $1" | bc)
+    n=$(echo "$n/2 + $a" | bc)
     for ((i=0;i<$count;i++))
     do
-        add4=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $4}')
-        add5=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $5}')
-        add10=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $10}')
-        add14=$(cat $tempdir/$dir/$i | awk "(NR == `echo $1`)" | awk '{print $14}')
-        add55=$(cat $tempdir/$dir/$i-1 | awk "(NR == `echo $n`)" | awk '{print $5}')
-        add66=$(cat $tempdir/$dir/$i-1 | awk "(NR == `echo $n`)" | awk '{print $6}')
+        add4=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $4}')
+        add5=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $5}')
+        add10=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $10}')
+        add14=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $14}')
+        add55=$(cat $tempdir/$dir/$i-1 | awk "(NR == $n)" | awk '{print $5}')
+        add66=$(cat $tempdir/$dir/$i-1 | awk "(NR == $n)" | awk '{print $6}')
         res4=$(echo "$res4 + $add4" | bc)
         res5=$(echo "$res5 + $add5" | bc)
         res10=$(echo "$res10 + $add10" | bc)
@@ -332,7 +333,7 @@ cat <<HTML
     <h1>Загрузка дисков</h1>
     <table class="iostat"><tbody>
     <tr><td>Устройство</td><td>Всего прочитано (Кб)</td><td>Всего записано (Кб)</td><td>Чтение (Кб/c)</td><td>Запись (Кб/с)</td><td>Время обработки запроса (мс)</td><td>% утилизации</td></tr>
-    $(n=$(cat $tempdir/iostat/0 | wc -l); for ((i=0;i<$n;i++)); do ios $i; done)
+    $(num=$(cat $tempdir/iostat/0 | wc -l); for ((c=0;c<$num;c++)); do ios $c; done)
     </tbody></table>
 
     <hr>
@@ -344,7 +345,7 @@ cat <<HTML
     <tr><td>bytes</td><td>packets</td><td>errs</td><td>drop</td><td>fifo</td><td>frame</td><td>compressed</td><td>multicast</td><td></td>
         <td>bytes</td><td>packets</td><td>errs</td><td>drop</td><td>fifo</td><td>colls</td><td>carrier</td><td>compressed</td>
     </tr>
-    $(n=$(cat $tempdir/procfs/0 | wc -l); for ((i=0;i<$n;i++)); do proc $i; done)
+    $(num=$(cat $tempdir/procfs/0 | wc -l); for ((c=1;c<=$num;c++)); do proc $c; done)
     </tbody></table>
 
     <hr>
@@ -379,7 +380,7 @@ cat <<HTML
     <h1>Средняя загрузка CPU</h1>
     <table class="cpu"><tbody>
     <tr><td>CPU</td><td>%user</td><td>%system</td><td>%idle</td><td>%iowait</td></tr>
-    $(n=$(cat $tempdir/mpstat/0 | wc -l); for ((i=0;i<$n;i++)); do mps $i; done)
+    $(num=$(cat $tempdir/mpstat/0 | wc -l); for ((c=1;c<=$num;c++)); do mps $c; done)
     </tbody></table>
 
     <hr>
@@ -388,7 +389,7 @@ cat <<HTML
     <tr><td>Файловая система</td><td>Размер</td><td>Использовано</td><td>Доступно</td><td>Использовано%</td><td></td>
         <td>Инодов всего</td><td>Инодов использовано</td><td>Инодов доступно</td><td>Инодов использовано%</td><td>Файл</td><td>Смонтировано в</td>
     </tr>
-    $(n=$(cat $tempdir/df/0 | wc -l); for ((i=0;i<$n;i++)); do dfree $i; done)
+    $(num=$(cat $tempdir/df/0 | wc -l); for ((c=1;c<=$num;c++)); do dfree $c; done)
     </tbody></table>
 
     <hr>
