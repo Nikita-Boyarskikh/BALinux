@@ -343,10 +343,10 @@ cat <<HTML
     $(num=$(cat $tempdir/procfs/0 | wc -l); for ((c=1;c<=$num;c++)); do proc $c; done)
     </tbody></table>
 
-$(num=$(cat $tempdir/df/0 | wc -l); for ((c=1;c<=$num;c++)); do dfree $c; done)
     <hr>
     <h1>Top talkers</h1>
-    tcpdump
+
+
 
     <hr>
     <h1>Информация о сетевых соединениях</h1>
