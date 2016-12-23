@@ -201,15 +201,15 @@ mps() {
         add6=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $6}')
         add13=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $13}')
         add7=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $7}')
-        res45=$(echo "$res45 + $add5 + $add4" | bc)
-        res6=$(echo "$res6 + $add6" | bc)
-        res13=$(echo "$res13 + $add13" | bc)
-        res7=$(echo "$res7 + $add7" | bc)
+        res45=$(echo "scale=2; $res45 + $add5 + $add4" | bc)
+        res6=$(echo "scale=2; $res6 + $add6" | bc)
+        res13=$(echo "scale=2; $res13 + $add13" | bc)
+        res7=$(echo "scale=2; $res7 + $add7" | bc)
     done
-    res45=$(echo "scale=1; $res45 / $count" | bc)
-    res6=$(echo "scale=1; $res6 / $count" | bc)
-    res13=$(echo "scale=1; $res13 / $count" | bc)
-    res7=$(echo "scale=1; $res7 / $count" | bc)
+    res45=$(echo "scale=2; $res45 / $count" | bc)
+    res6=$(echo "scale=2; $res6 / $count" | bc)
+    res13=$(echo "scale=2; $res13 / $count" | bc)
+    res7=$(echo "scale=2; $res7 / $count" | bc)
     echo "<tr><td> $res3 </td><td> $res45 </td><td> $res6 </td><td> $res13 </td><td> $res7  </td></tr>"
 }
 
@@ -257,7 +257,7 @@ dfree() {
     res8=$(echo "scale=1; $res8 / $count" | bc)
     res9=$(echo "scale=1; $res9 / $count" | bc)
     res10=$(echo "scale=1; $res10 / $count" | bc)
-    echo "<tr><td> $res1 </td><td> $res2 </td><td> $res3 </td><td> $res4 </td><td> $res5 </td><td></td><td> $res6 </td>\
+    echo "<tr><td> $res1 </td><td> $res2 </td><td> $res3 </td><td> $res4 </td><td> $res5 </td><td> $res6 </td>\
     <td> $res7 </td> $res8 </td><td> $res9 </td><td> $res10 </td><td> $res11 </td><td> $res12 </td></tr>"
 }
 
@@ -272,29 +272,27 @@ ios() {
     res66=0
     count=$(ls $tempdir/$dir | wc -l)
     count=$(echo "$count / 2" | bc)
-    n=$(cat $tempdir/$dir/0 | wc -l)
-    n=$(echo "$n/2 + $a" | bc)
     for ((i=0;i<$count;i++))
     do
         add4=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $4}')
         add5=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $5}')
         add10=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $10}')
         add14=$(cat $tempdir/$dir/$i | awk "(NR == $1)" | awk '{print $14}')
-        add55=$(cat $tempdir/$dir/$i-1 | awk "(NR == $n)" | awk '{print $5}')
-        add66=$(cat $tempdir/$dir/$i-1 | awk "(NR == $n)" | awk '{print $6}')
-        res4=$(echo "$res4 + $add4" | bc)
-        res5=$(echo "$res5 + $add5" | bc)
-        res10=$(echo "$res10 + $add10" | bc)
-        res14=$(echo "$res14 + $add14" | bc)
-        res55=$(echo "$res55 + $add55" | bc)
-        res66=$(echo "$res66 + $add66" | bc)
+        add55=$(cat $tempdir/$dir/$i-1 | awk "(NR == $1)" | awk '{print $5}') #?
+        add66=$(cat $tempdir/$dir/$i-1 | awk "(NR == $1)" | awk '{print $6}') #?
+        res4=$(echo "scale=2; $res4 + $add4" | bc)
+        res5=$(echo "scale=2; $res5 + $add5" | bc)
+        res10=$(echo "scale=2; $res10 + $add10" | bc)
+        res14=$(echo "scale=2; $res14 + $add14" | bc)
+        res55=$(echo "scale=2; $res55 + $add55" | bc)
+        res66=$(echo "scale=2; $res66 + $add66" | bc)
     done
-    res4=$(echo "scale=1; $res4 / $count" | bc)
-    res5=$(echo "scale=1; $res5 / $count" | bc)
-    res10=$(echo "scale=1; $res10 / $count" | bc)
-    res14=$(echo "scale=1; $res14 / $count" | bc)
-    res55=$(echo "scale=1; $res55 / $count" | bc)
-    res66=$(echo "scale=1; $res66 / $count" | bc)
+    res4=$(echo "scale=2; $res4 / $count" | bc)
+    res5=$(echo "scale=2; $res5 / $count" | bc)
+    res10=$(echo "scale=2; $res10 / $count" | bc)
+    res14=$(echo "scale=2; $res14 / $count" | bc)
+    res55=$(echo "scale=2; $res55 / $count" | bc)
+    res66=$(echo "scale=2; $res66 / $count" | bc)
     echo "<tr><td> $res1 </td><td> $res55 </td><td> $res66 </td><td> $res4 </td><td> $res5 </td><td> $res10 </td><td> $res14 </td></tr>"
 }
 
@@ -310,7 +308,7 @@ cat <<HTML
     <meta charset='utf-8'>
 </head>
 <body>
-    <center><h1>Добро пожаловать в Sysinfo!</h1></center>
+    <center><h1>Добро пожаловать в Sysinfo!</h1><p>(Информация усреднена за последнюю минуту)</p></center>
     <p>Вы вошли с адреса: $HTTP_X_FORWARDED_FOR:$HTTP_X_FORWARDED_FOR_PORT</p>
     <p>О перенаправлении Вас на локальный порт 8888 позаботился Nginx версии $HTTP_X_NGX_VERSION</p>
     <p>Его внешний адрес: $REMOTE_ADDR:$REMOTE_PORT</p>
@@ -333,7 +331,7 @@ cat <<HTML
     <h1>Загрузка дисков</h1>
     <table class="iostat"><tbody>
     <tr><td>Устройство</td><td>Всего прочитано (Кб)</td><td>Всего записано (Кб)</td><td>Чтение (Кб/c)</td><td>Запись (Кб/с)</td><td>Время обработки запроса (мс)</td><td>% утилизации</td></tr>
-    $(num=$(cat $tempdir/iostat/0 | wc -l); for ((c=0;c<$num;c++)); do ios $c; done)
+    $(num=$(cat $tempdir/iostat/0 | wc -l); for ((c=1;c<=$num;c++)); do ios $c; done)
     </tbody></table>
 
     <hr>
@@ -356,14 +354,14 @@ cat <<HTML
     <h1>Информация о сетевых соединениях</h1>
     <h3>Слушающие сокеты:</h3>
     <table class="sockets"><tbody>
-    <tr><td rowspan=4>TCP</td><td>Очередь отправки</td><td>$(netstat -ant | awk '/^tcp/ {print $2}')</td></tr>
-    <tr><td>Очередь приёма</td><td>$(netstat -ant | awk '/^tcp/ {print $3}')</td></tr>
-    <tr><td>Локальный адрес</td><td>$(netstat -ant | awk '/^tcp/ {print $4}')</td></tr>
-    <tr><td>Удалённый адрес</td><td>$(netstat -ant | awk '/^tcp/ {print $5}')</td></tr>
-    <tr><td rowspan=4>UDP</td><td>Очередь отправки</td><td>$(netstat -ant | awk '/^udp/ {print $2}')</td></tr>
-    <tr><td>Очередь приёма</td><td>$(netstat -ant | awk '/^udp/ {print $3}')</td></tr>
-    <tr><td>Локальный адрес</td><td>$(netstat -ant | awk '/^udp/ {print $4}')</td></tr>
-    <tr><td>Удалённый адрес</td><td>$(netstat -ant | awk '/^udp/ {print $5}')</td></tr>
+    <tr><td rowspan=4>TCP</td><td>Очередь отправки</td>$(netstat -ant | awk '/^tcp/ {print "<td>", $2, "</td>"}')</tr>
+    <tr><td>Очередь приёма</td>$(netstat -ant | awk '/^tcp/ {print "<td>", $3, "</td>"}')</tr>
+    <tr><td>Локальный адрес</td>$(netstat -ant | awk '/^tcp/ {print "<td>", $4, "</td>"}')</tr>
+    <tr><td>Удалённый адрес</td>$(netstat -ant | awk '/^tcp/ {print "<td>", $5, "</td>"}')</tr>
+    <tr><td rowspan=4>UDP</td>Очередь отправки</td>$(netstat -ant | awk '/^udp/ {print "<td>", $2, "</td>"}')</tr>
+    <tr><td>Очередь приёма</td>$(netstat -ant | awk '/^udp/ {print "<td>", $3, "</td>"}')</tr>
+    <tr><td>Локальный адрес</td>$(netstat -ant | awk '/^udp/ {print "<td>", $4, "</td>"}')</tr>
+    <tr><td>Удалённый адрес</td>$(netstat -ant | awk '/^udp/ {print "<td>", $5, "</td>"}')</tr>
     </tbody></table>
 
     <h3>Количество tcp-соединений по состояниям:</h3>
@@ -386,8 +384,9 @@ cat <<HTML
     <hr>
     <h1>Информация о дисках</h1>
     <table class="df"><tbody>
-    <tr><td>Файловая система</td><td>Размер</td><td>Использовано</td><td>Доступно</td><td>Использовано%</td><td></td>
-        <td>Инодов всего</td><td>Инодов использовано</td><td>Инодов доступно</td><td>Инодов использовано%</td><td>Файл</td><td>Смонтировано в</td>
+    <tr><td>Файловая система</td><td>Тип</td><td>Инодов всего</td><td>Инодов использовано</td><td>Инодов доступно</td>
+        <td>Инодов использовано%</td><td></td><td>Использовано</td><td>Доступно</td><td>Использовано%</td>
+        <td>Файл</td><td>Смонтировано в</td>
     </tr>
     $(num=$(cat $tempdir/df/0 | wc -l); for ((c=1;c<=$num;c++)); do dfree $c; done)
     </tbody></table>
