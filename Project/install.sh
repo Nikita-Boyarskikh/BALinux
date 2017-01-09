@@ -2,9 +2,8 @@
 
 # Устанавливаем необходимые утилиты
 apt-get -y update
-apt-get -y clean
 apt-get -y upgrade
-apt-get -y install apache2 nginx sysstat
+apt-get -y install apache2 nginx sysstat bc
 
 # Копируем конфиги для apache и включаем их в его include
 rm /etc/apache2/ports.conf /etc/apache2/apache2.conf
@@ -13,22 +12,19 @@ cp apache/sysinfo.conf /etc/apache2/sites-available/sysinfo.conf
 ln -s /etc/apache2/sites-available/sysinfo.conf /etc/apache2/sites-enabled/sysinfo.conf
 
 # Копируем конфиги для nginx и включаем их в его include
+rm /etc/nginx/sites-available/default
 cp nginx/BALinux.conf /etc/nginx/sites-available/BALinux.conf
 ln -s /etc/nginx/sites-available/BALinux.conf /etc/nginx/sites-enabled/BALinux.conf
 
 # Копируем файлы проекта
-cp -R sysinfo /var/www/sysinfo/
+cp -R sysinfo /var/www/sysinfo
 chmod 775 -R /var/www/sysinfo
-
-# Делаем исполняемыми скрипты крон-задач
-chmod +x /var/www/sysinfo/cron/*
 
 # Создаём крон-задачи и директории им для хранения данных
 mkdir /tmp/sysinfo
 mkdir /tmp/sysinfo/tcpdump
 mkdir /tmp/sysinfo/iostat
 mkdir /tmp/sysinfo/procfs
-mkdir /tmp/sysinfo/net
 mkdir /tmp/sysinfo/netstat
 mkdir /tmp/sysinfo/mpstat
 mkdir /tmp/sysinfo/df
