@@ -1,0 +1,15 @@
+#!/bin/bash
+if [ -z $1 ]
+then
+    dir[0]="./"
+fi
+while [ ! -z "$1" ]
+do
+    echo "Updating $1..."
+    cd "$1" > /dev/null
+    git fetch && git pull && git status
+    cd - > /dev/null
+    echo
+    shift
+done
+exit 0
